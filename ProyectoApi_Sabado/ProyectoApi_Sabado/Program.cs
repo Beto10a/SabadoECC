@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using ProyectoApi_Sabado.Models;
+using ProyectoApi_Sabado.Services;
 using Swashbuckle.AspNetCore.Filters;
 using System.Text;
 
@@ -8,6 +10,8 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
+
+builder.Services.AddSingleton<IUtilitariosModel, UtilitariosModel>();
 
 
 builder.Services.AddSwaggerGen(options =>

@@ -6,6 +6,8 @@ using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using Microsoft.VisualBasic;
 using Microsoft.AspNetCore.Authorization;
+using ProyectoApi_Sabado.Models;
+using ProyectoApi_Sabado.Services;
 
 namespace ProyectoApi_Sabado.Controllers
 {
@@ -13,14 +15,21 @@ namespace ProyectoApi_Sabado.Controllers
     [ApiController]
     public class UsuarioController : ControllerBase
     {
+        private readonly IUtilitariosModel _utilitariosModel;
+        public UsuarioController(IUtilitariosModel utilitariosModel)
+        {
+            _utilitariosModel = utilitariosModel;
+        }
 
         [AllowAnonymous]
         [HttpPost]
         [Route("IniciarSesion")]
-        public IActionResult ConsultarUsuarios(Usuario entidad)
+        public IActionResult IniciarSesion(Usuario entidad)
         {
             if (entidad.cedula == "304590415" && entidad.contrasenna == "secreta")
-                return Ok(GenerarToken(entidad.cedula));
+            {
+                return Ok(_utilitariosModel.GenerarToken(entidad.cedula));
+            }
 
             return NotFound("Sus credenciales no son correctas");
         }
@@ -33,24 +42,6 @@ namespace ProyectoApi_Sabado.Controllers
             var claims = User.Claims;
 
             return Ok(DateTime.Now);
-        }
-
-        private string GenerarToken(string cedula)
-        {
-            List<Claim> claims = new List<Claim>();
-            claims.Add(new Claim("username", cedula));
-            claims.Add(new Claim("userrol", "ADMIN"));
-
-            string SecretKey = "erQuPVWaBcnFePyQEGRhDjFCzbtGBLgL";
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(SecretKey));
-            var cred = new SigningCredentials(key, SecurityAlgorithms.HmacSha256Signature);
-
-            var token = new JwtSecurityToken(
-                claims: claims,
-                expires: DateTime.UtcNow.AddMinutes(10),
-                signingCredentials: cred);
-
-            return new JwtSecurityTokenHandler().WriteToken(token);
         }
 
     }
