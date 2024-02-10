@@ -1,4 +1,4 @@
-﻿namespace ProyectoApi_Sabado.Entidades
+﻿namespace ProyectoWeb_Sabado.Entidades
 {
     public class Usuario
     {

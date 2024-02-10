@@ -13,7 +13,6 @@ builder.Services.AddEndpointsApiExplorer();
 
 builder.Services.AddSingleton<IUtilitariosModel, UtilitariosModel>();
 
-
 builder.Services.AddSwaggerGen(options =>
 {
     options.AddSecurityDefinition("oauth2", new OpenApiSecurityScheme
