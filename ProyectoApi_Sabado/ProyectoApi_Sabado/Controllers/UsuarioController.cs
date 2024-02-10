@@ -36,7 +36,7 @@ namespace ProyectoApi_Sabado.Controllers
             using (var db = new SqlConnection(_configuration.GetConnectionString("DefaultConnection")))
             {
                 return Ok(db.Execute("RegistrarUsuario", 
-                    new { entidad.correo, entidad.contrasenna, entidad.nombre, entidad.idRol }, 
+                    new { entidad.correo, entidad.contrasenna, entidad.nombre }, 
                     commandType: CommandType.StoredProcedure));
             }                
         }
