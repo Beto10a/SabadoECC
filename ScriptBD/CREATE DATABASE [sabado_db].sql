@@ -31,6 +31,22 @@ CREATE TABLE [dbo].[tUsuario](
 ) ON [PRIMARY]
 GO
 
+SET IDENTITY_INSERT [dbo].[tRol] ON 
+GO
+INSERT [dbo].[tRol] ([IdRol], [Nombre]) VALUES (1, N'Usuario')
+GO
+INSERT [dbo].[tRol] ([IdRol], [Nombre]) VALUES (2, N'Administrador')
+GO
+SET IDENTITY_INSERT [dbo].[tRol] OFF
+GO
+
+SET IDENTITY_INSERT [dbo].[tUsuario] ON 
+GO
+INSERT [dbo].[tUsuario] ([IdUsuario], [Correo], [Contrasenna], [Nombre], [IdRol], [Estado]) VALUES (1, N'ecalvo90415@ufide.ac.cr', N'90415', N'Eduardo Calvo Castillo', 1, 1)
+GO
+SET IDENTITY_INSERT [dbo].[tUsuario] OFF
+GO
+
 ALTER TABLE [dbo].[tUsuario]  WITH CHECK ADD  CONSTRAINT [FK_tUsuario_tRol] FOREIGN KEY([IdRol])
 REFERENCES [dbo].[tRol] ([IdRol])
 GO
