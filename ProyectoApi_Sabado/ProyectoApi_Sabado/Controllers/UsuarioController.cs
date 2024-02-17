@@ -11,7 +11,7 @@ namespace ProyectoApi_Sabado.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class UsuarioController(IConfiguration _configuration) : ControllerBase
+    public class UsuarioController(IConfiguration _configuration, IUtilitariosModel _utilitariosModel) : ControllerBase
     {
         [AllowAnonymous]
         [HttpPost]
@@ -20,11 +20,24 @@ namespace ProyectoApi_Sabado.Controllers
         {
             using (var db = new SqlConnection(_configuration.GetConnectionString("DefaultConnection")))
             {
+                UsuarioRespuesta respuesta = new UsuarioRespuesta();
+
                 var resultado = db.Query<Usuario>("IniciarSesion",
                     new { entidad.Correo, entidad.Contrasenna },
                     commandType: CommandType.StoredProcedure).FirstOrDefault();
 
-                return Ok(resultado);
+                if (resultado == null)
+                {
+                    respuesta.Codigo = "-1";
+                    respuesta.Mensaje = "Sus datos no son correctos";
+                }
+                else
+                {
+                    respuesta.Dato = resultado;
+                    respuesta.Dato.Token = _utilitariosModel.GenerarToken(resultado.Correo ?? string.Empty);
+                }
+
+                return Ok(respuesta);
             }
         }
 

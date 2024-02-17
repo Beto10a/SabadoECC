@@ -6,18 +6,31 @@ using ProyectoWeb_Sabado.Services;
 namespace ProyectoWeb_Sabado.Controllers
 {
     [ResponseCache(NoStore = true, Duration = 0)]
-    public class HomeController(IUsuarioModel _usuarioModel) : Controller
+    public class HomeController(IUsuarioModel _usuarioModel, IUtilitariosModel _utilitariosModel) : Controller
     {
-        [Seguridad]
-        public IActionResult PantallaInicio()
-        {
-            return View();
-        }
-
+        [HttpGet]
         public IActionResult IniciarSesion()
         {
             HttpContext.Session.Clear();
             return View();
+        }
+
+        [HttpPost]
+        public IActionResult IniciarSesion(Usuario entidad)
+        {
+            entidad.Contrasenna = _utilitariosModel.Encrypt(entidad.Contrasenna);
+            var resp = _usuarioModel.IniciarSesion(entidad);
+
+            if (resp?.Codigo == "00")
+            {
+                HttpContext.Session.SetString("Login", "true");
+                return RedirectToAction("PantallaInicio", "Home");
+            }
+            else
+            {
+                ViewBag.MsjPantalla = resp?.Mensaje;
+                return View();
+            }
         }
 
 
@@ -31,6 +44,7 @@ namespace ProyectoWeb_Sabado.Controllers
         [HttpPost]
         public IActionResult RegistrarUsuario(Usuario entidad)
         {
+            entidad.Contrasenna = _utilitariosModel.Encrypt(entidad.Contrasenna);
             var resp = _usuarioModel.RegistrarUsuario(entidad);
 
             if (resp?.Codigo == "00")
@@ -40,6 +54,14 @@ namespace ProyectoWeb_Sabado.Controllers
                 ViewBag.MsjPantalla = resp?.Mensaje;
                 return View();
             }
+        }
+
+
+        [Seguridad]
+        [HttpGet]
+        public IActionResult PantallaInicio()
+        {
+            return View();
         }
 
     }
