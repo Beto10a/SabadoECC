@@ -5,27 +5,27 @@ using ProyectoApi_Sabado.Services;
 using Dapper;
 using System.Data.SqlClient;
 using System.Data;
+using ProyectoApi_Sabado.Entities;
 
 namespace ProyectoApi_Sabado.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class UsuarioController : ControllerBase
+    public class UsuarioController(IConfiguration _configuration) : ControllerBase
     {
-        private readonly IUtilitariosModel _utilitariosModel;
-        private readonly IConfiguration _configuration;
-        public UsuarioController(IUtilitariosModel utilitariosModel, IConfiguration configuration)
-        {
-            _utilitariosModel = utilitariosModel;
-            _configuration = configuration;
-        }
-
         [AllowAnonymous]
         [HttpPost]
         [Route("IniciarSesion")]
         public IActionResult IniciarSesion(Usuario entidad)
         {
-           return Ok();
+            using (var db = new SqlConnection(_configuration.GetConnectionString("DefaultConnection")))
+            {
+                var resultado = db.Query<Usuario>("IniciarSesion",
+                    new { entidad.Correo, entidad.Contrasenna },
+                    commandType: CommandType.StoredProcedure).FirstOrDefault();
+
+                return Ok(resultado);
+            }
         }
 
         [AllowAnonymous]
@@ -35,9 +35,20 @@ namespace ProyectoApi_Sabado.Controllers
         {
             using (var db = new SqlConnection(_configuration.GetConnectionString("DefaultConnection")))
             {
-                return Ok(db.Execute("RegistrarUsuario", 
-                    new { entidad.correo, entidad.contrasenna, entidad.nombre }, 
-                    commandType: CommandType.StoredProcedure));
+                Respuesta respuesta = new Respuesta();
+
+                var resultado = db.Execute("RegistrarUsuario", 
+                    new { entidad.Correo, entidad.Contrasenna, entidad.NombreUsuario }, 
+                    commandType: CommandType.StoredProcedure);
+
+                if (resultado <= 0)
+                {
+                    respuesta.Codigo = "-1";
+                    respuesta.Mensaje = "Su correo ya se encuentra registrado";
+                }
+
+                return Ok(respuesta);
+
             }                
         }
 

@@ -6,15 +6,15 @@ using System.Text;
 
 namespace ProyectoApi_Sabado.Models
 {
-    public class UtilitariosModel : IUtilitariosModel
+    public class UtilitariosModel(IConfiguration _configuration) : IUtilitariosModel
     {
 
-        public string GenerarToken(string cedula)
+        public string GenerarToken(string correo)
         {
             List<Claim> claims = new List<Claim>();
-            claims.Add(new Claim("username", cedula));
+            claims.Add(new Claim("username", correo));
 
-            string SecretKey = "erQuPVWaBcnFePyQEGRhDjFCzbtGBLgL";
+            string SecretKey = _configuration.GetSection("settings:SecretKey").Value ?? string.Empty;
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(SecretKey));
             var cred = new SigningCredentials(key, SecurityAlgorithms.HmacSha256Signature);
 

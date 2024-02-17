@@ -4,6 +4,6 @@ namespace ProyectoWeb_Sabado.Services
 {
     public interface IUsuarioModel
     {
-        public int RegistrarUsuario(Usuario entidad);
+        public Respuesta? RegistrarUsuario(Usuario entidad);
     }
 }

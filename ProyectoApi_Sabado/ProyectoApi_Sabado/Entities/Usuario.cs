@@ -2,10 +2,12 @@
 {
     public class Usuario
     {
-        public string correo { get; set; } = string.Empty;
-        public string contrasenna { get; set; } = string.Empty;
-        public string nombre { get; set; } = string.Empty;
-        public short idRol { get; set; }
-        public bool estado { get; set; }
+        public long IdUsuario { get; set; }
+        public string Correo { get; set; } = string.Empty;
+        public string Contrasenna { get; set; } = string.Empty;
+        public string NombreUsuario { get; set; } = string.Empty;
+        public short IdRol { get; set; }
+        public string NombreRol { get; set; } = string.Empty;
+        public bool Estado { get; set; }
     }
 }

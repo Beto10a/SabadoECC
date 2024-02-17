@@ -6,14 +6,8 @@ using ProyectoWeb_Sabado.Services;
 namespace ProyectoWeb_Sabado.Controllers
 {
     [ResponseCache(NoStore = true, Duration = 0)]
-    public class HomeController : Controller
+    public class HomeController(IUsuarioModel _usuarioModel) : Controller
     {
-        private readonly IUsuarioModel _usuarioModel;
-        public HomeController(IUsuarioModel usuarioModel)
-        {
-            _usuarioModel = usuarioModel;
-        }
-
         [Seguridad]
         public IActionResult PantallaInicio()
         {
@@ -25,6 +19,7 @@ namespace ProyectoWeb_Sabado.Controllers
             HttpContext.Session.Clear();
             return View();
         }
+
 
         [HttpGet]
         public IActionResult RegistrarUsuario()
@@ -38,10 +33,13 @@ namespace ProyectoWeb_Sabado.Controllers
         {
             var resp = _usuarioModel.RegistrarUsuario(entidad);
 
-            if (resp > 0)
+            if (resp?.Codigo == "00")
                 return RedirectToAction("IniciarSesion", "Home");
-
-            return View();
+            else
+            {
+                ViewBag.MsjPantalla = resp?.Mensaje;
+                return View();
+            }
         }
 
     }
