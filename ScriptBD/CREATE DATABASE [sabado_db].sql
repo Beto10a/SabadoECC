@@ -24,6 +24,7 @@ CREATE TABLE [dbo].[tUsuario](
 	[Nombre] [varchar](200) NOT NULL,
 	[IdRol] [smallint] NOT NULL,
 	[Estado] [bit] NOT NULL,
+	[EsTemporal] [bit] NULL,
  CONSTRAINT [PK_tUsuario] PRIMARY KEY CLUSTERED 
 (
 	[IdUsuario] ASC
@@ -42,13 +43,15 @@ GO
 
 SET IDENTITY_INSERT [dbo].[tUsuario] ON 
 GO
-INSERT [dbo].[tUsuario] ([IdUsuario], [Correo], [Contrasenna], [Nombre], [IdRol], [Estado]) VALUES (1, N'ecalvo90415@ufide.ac.cr', N'90415', N'Eduardo Calvo Castillo', 1, 1)
+INSERT [dbo].[tUsuario] ([IdUsuario], [Correo], [Contrasenna], [Nombre], [IdRol], [Estado], [EsTemporal]) VALUES (1, N'ecalvo90415@ufide.ac.cr', N'90415', N'Eduardo Calvo Castillo', 1, 1, NULL)
 GO
-INSERT [dbo].[tUsuario] ([IdUsuario], [Correo], [Contrasenna], [Nombre], [IdRol], [Estado]) VALUES (2, N'mvargas80464@ufide.ac.cr', N'80464', N'Mathías Vargas Ramírez', 1, 1)
+INSERT [dbo].[tUsuario] ([IdUsuario], [Correo], [Contrasenna], [Nombre], [IdRol], [Estado], [EsTemporal]) VALUES (2, N'mvargas80464@ufide.ac.cr', N'80464', N'Mathías Vargas Ramírez', 1, 1, NULL)
 GO
-INSERT [dbo].[tUsuario] ([IdUsuario], [Correo], [Contrasenna], [Nombre], [IdRol], [Estado]) VALUES (3, N'cvasquez10821@ufide.ac.cr', N'10821', N'Claudio Vasquez Pérez', 1, 1)
+INSERT [dbo].[tUsuario] ([IdUsuario], [Correo], [Contrasenna], [Nombre], [IdRol], [Estado], [EsTemporal]) VALUES (3, N'cvasquez10821@ufide.ac.cr', N'ep2pIty8fc/s+2OJ8Q6PaA==', N'Claudio Vasquez Pérez', 1, 1, NULL)
 GO
-INSERT [dbo].[tUsuario] ([IdUsuario], [Correo], [Contrasenna], [Nombre], [IdRol], [Estado]) VALUES (4, N'jmontero80022@ufide.ac.cr', N'hmBrA7p5iOP2kSRY9tdktA==', N'Joseth Montero Arias', 1, 1)
+INSERT [dbo].[tUsuario] ([IdUsuario], [Correo], [Contrasenna], [Nombre], [IdRol], [Estado], [EsTemporal]) VALUES (4, N'jmontero80022@ufide.ac.cr', N'FLXzryUlx6A636HZLZsjDQ==', N'Joseth Montero Arias', 1, 1, NULL)
+GO
+INSERT [dbo].[tUsuario] ([IdUsuario], [Correo], [Contrasenna], [Nombre], [IdRol], [Estado], [EsTemporal]) VALUES (5, N'aruiz00724@ufide.ac.cr', N'e04c01Q8SOP/wWaIE6q5Qw==', N'Anthony Ruíz González', 1, 1, 1)
 GO
 SET IDENTITY_INSERT [dbo].[tUsuario] OFF
 GO
@@ -71,11 +74,41 @@ CREATE PROCEDURE [dbo].[IniciarSesion]
 AS
 BEGIN
 	
-	SELECT	IdUsuario,Correo,U.Nombre 'NombreUsuario',U.IdRol,R.Nombre 'NombreRol',Estado
+	SELECT	IdUsuario,Correo,U.Nombre 'NombreUsuario',U.IdRol,R.Nombre 'NombreRol',Estado,EsTemporal
 	  FROM	tUsuario U
 	  INNER JOIN tRol R ON U.IdRol = R.IdRol
 	  WHERE	Correo = @Correo
 		AND Contrasenna = @Contrasenna
+		AND Estado = 1
+
+END
+GO
+
+CREATE PROCEDURE [dbo].[RecuperarAcceso]
+	@Correo			VARCHAR(200),
+	@Contrasenna	VARCHAR(200)
+AS
+BEGIN
+
+	DECLARE @Consecutivo BIGINT
+	
+	SELECT  @Consecutivo = IdUsuario
+	FROM	tUsuario
+	WHERE	Correo = @Correo
+		AND Estado = 1
+
+	IF @Consecutivo IS NOT NULL
+	BEGIN
+		UPDATE tUsuario
+		SET Contrasenna = @Contrasenna,
+			EsTemporal = 1
+		WHERE Correo = @Correo
+	END
+
+	SELECT	IdUsuario,Correo,U.Nombre 'NombreUsuario',U.IdRol,R.Nombre 'NombreRol',Estado,EsTemporal
+	  FROM	tUsuario U
+	  INNER JOIN tRol R ON U.IdRol = R.IdRol
+	  WHERE	Correo = @Correo
 		AND Estado = 1
 
 END
@@ -91,11 +124,8 @@ BEGIN
 	IF NOT EXISTS(SELECT 1 FROM tUsuario WHERE Correo = @Correo)
 	BEGIN
 
-		DECLARE @Estado BIT = 1,
-				@IdRol  SMALLINT = 1
-
-		INSERT INTO dbo.tUsuario(Correo,Contrasenna,Nombre,IdRol,Estado)
-		VALUES (@Correo,@Contrasenna,@NombreUsuario,@IdRol,@Estado)
+		INSERT INTO dbo.tUsuario(Correo,Contrasenna,Nombre,IdRol,Estado,EsTemporal)
+		VALUES (@Correo,@Contrasenna,@NombreUsuario,1,1,0)
 
 	END
 
