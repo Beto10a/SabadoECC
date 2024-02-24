@@ -11,7 +11,8 @@ namespace ProyectoApi_Sabado.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class UsuarioController(IConfiguration _configuration, IUtilitariosModel _utilitariosModel) : ControllerBase
+    public class UsuarioController(IConfiguration _configuration, IUtilitariosModel _utilitariosModel,
+                                   IHostEnvironment _hostEnvironment) : ControllerBase
     {
         [AllowAnonymous]
         [HttpPost]
@@ -76,9 +77,10 @@ namespace ProyectoApi_Sabado.Controllers
 
                 string NuevaContrasenna = _utilitariosModel.GenerarNuevaContrasenna();
                 string Contrasenna = _utilitariosModel.Encrypt(NuevaContrasenna);
+                bool EsTemporal = true;
 
                 var resultado = db.Query<Usuario>("RecuperarAcceso",
-                    new { entidad.Correo, Contrasenna },
+                    new { entidad.Correo, Contrasenna, EsTemporal },
                     commandType: CommandType.StoredProcedure).FirstOrDefault();
 
                 if (resultado == null)
@@ -88,12 +90,48 @@ namespace ProyectoApi_Sabado.Controllers
                 }
                 else
                 {
-                    _utilitariosModel.EnviarCorreo(resultado.Correo!, "Nueva Contraseña!!", NuevaContrasenna);
+                    string ruta = Path.Combine(_hostEnvironment.ContentRootPath, "Password.html");
+                    string htmlBody = System.IO.File.ReadAllText(ruta);
+                    htmlBody = htmlBody.Replace("@Usuario@", resultado.NombreUsuario);
+                    htmlBody = htmlBody.Replace("@Contrasenna@", NuevaContrasenna);
+
+                    _utilitariosModel.EnviarCorreo(resultado.Correo!, "Nueva Contraseña!!", htmlBody);
                     respuesta.Dato = resultado;
                 }
 
                 return Ok(respuesta);
             }
         }
+
+        [AllowAnonymous]
+        [HttpPost]
+        [Route("CambiarContrasenna")]
+        public IActionResult CambiarContrasenna(Usuario entidad)
+        {
+            using (var db = new SqlConnection(_configuration.GetConnectionString("DefaultConnection")))
+            {
+                UsuarioRespuesta respuesta = new UsuarioRespuesta();
+
+                string Contrasenna = _utilitariosModel.Encrypt(entidad.Contrasenna!);
+                bool EsTemporal = false;
+
+                var resultado = db.Query<Usuario>("RecuperarAcceso",
+                    new { entidad.Correo, Contrasenna, EsTemporal },
+                    commandType: CommandType.StoredProcedure).FirstOrDefault();
+
+                if (resultado == null)
+                {
+                    respuesta.Codigo = "-1";
+                    respuesta.Mensaje = "Sus datos no son correctos";
+                }
+                else
+                {
+                    respuesta.Dato = resultado;
+                }
+
+                return Ok(respuesta);
+            }
+        }
+
     }
 }

@@ -84,6 +84,19 @@ namespace ProyectoWeb_Sabado.Controllers
         }
 
 
+        [HttpGet]
+        public IActionResult CambiarContrasenna()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public IActionResult CambiarContrasenna(Usuario entidad)
+        {
+            return View();
+        }
+
+
         [Seguridad]
         [HttpGet]
         public IActionResult PantallaInicio()

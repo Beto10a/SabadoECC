@@ -45,9 +45,9 @@ SET IDENTITY_INSERT [dbo].[tUsuario] ON
 GO
 INSERT [dbo].[tUsuario] ([IdUsuario], [Correo], [Contrasenna], [Nombre], [IdRol], [Estado], [EsTemporal]) VALUES (1, N'ecalvo90415@ufide.ac.cr', N'90415', N'Eduardo Calvo Castillo', 1, 1, NULL)
 GO
-INSERT [dbo].[tUsuario] ([IdUsuario], [Correo], [Contrasenna], [Nombre], [IdRol], [Estado], [EsTemporal]) VALUES (2, N'mvargas80464@ufide.ac.cr', N'80464', N'Mathías Vargas Ramírez', 1, 1, NULL)
+INSERT [dbo].[tUsuario] ([IdUsuario], [Correo], [Contrasenna], [Nombre], [IdRol], [Estado], [EsTemporal]) VALUES (2, N'mvargas80464@ufide.ac.cr', N'RS30JTL67ypVKLHqrV2TBA==', N'Mathías Vargas Ramírez', 1, 1, 0)
 GO
-INSERT [dbo].[tUsuario] ([IdUsuario], [Correo], [Contrasenna], [Nombre], [IdRol], [Estado], [EsTemporal]) VALUES (3, N'cvasquez10821@ufide.ac.cr', N'ep2pIty8fc/s+2OJ8Q6PaA==', N'Claudio Vasquez Pérez', 1, 1, NULL)
+INSERT [dbo].[tUsuario] ([IdUsuario], [Correo], [Contrasenna], [Nombre], [IdRol], [Estado], [EsTemporal]) VALUES (3, N'cvasquez10821@ufide.ac.cr', N'eBN/nwC6OCmvnoTe47t0tg==', N'Claudio Vasquez Pérez', 1, 1, 1)
 GO
 INSERT [dbo].[tUsuario] ([IdUsuario], [Correo], [Contrasenna], [Nombre], [IdRol], [Estado], [EsTemporal]) VALUES (4, N'jmontero80022@ufide.ac.cr', N'FLXzryUlx6A636HZLZsjDQ==', N'Joseth Montero Arias', 1, 1, NULL)
 GO
@@ -86,7 +86,8 @@ GO
 
 CREATE PROCEDURE [dbo].[RecuperarAcceso]
 	@Correo			VARCHAR(200),
-	@Contrasenna	VARCHAR(200)
+	@Contrasenna	VARCHAR(200),
+	@EsTemporal		BIT
 AS
 BEGIN
 
@@ -101,7 +102,7 @@ BEGIN
 	BEGIN
 		UPDATE tUsuario
 		SET Contrasenna = @Contrasenna,
-			EsTemporal = 1
+			EsTemporal = @EsTemporal
 		WHERE Correo = @Correo
 	END
 
