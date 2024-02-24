@@ -2,8 +2,9 @@
 {
     public interface IUtilitariosModel
     {
-
-        public string GenerarToken(string correo);
-
+        string GenerarToken(string correo);
+        string GenerarNuevaContrasenna();
+        string Encrypt(string texto);
+        void EnviarCorreo(string Destinatario, string Asunto, string Mensaje);
     }
 }

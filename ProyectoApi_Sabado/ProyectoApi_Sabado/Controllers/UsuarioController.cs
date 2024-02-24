@@ -65,5 +65,35 @@ namespace ProyectoApi_Sabado.Controllers
             }                
         }
 
+        [AllowAnonymous]
+        [HttpPost]
+        [Route("RecuperarAcceso")]
+        public IActionResult RecuperarAcceso(Usuario entidad)
+        {
+            using (var db = new SqlConnection(_configuration.GetConnectionString("DefaultConnection")))
+            {
+                UsuarioRespuesta respuesta = new UsuarioRespuesta();
+
+                string NuevaContrasenna = _utilitariosModel.GenerarNuevaContrasenna();
+                string Contrasenna = _utilitariosModel.Encrypt(NuevaContrasenna);
+
+                var resultado = db.Query<Usuario>("RecuperarAcceso",
+                    new { entidad.Correo, Contrasenna },
+                    commandType: CommandType.StoredProcedure).FirstOrDefault();
+
+                if (resultado == null)
+                {
+                    respuesta.Codigo = "-1";
+                    respuesta.Mensaje = "Sus datos no son correctos";
+                }
+                else
+                {
+                    _utilitariosModel.EnviarCorreo(resultado.Correo!, "Nueva Contraseña!!", NuevaContrasenna);
+                    respuesta.Dato = resultado;
+                }
+
+                return Ok(respuesta);
+            }
+        }
     }
 }

@@ -18,13 +18,18 @@ namespace ProyectoWeb_Sabado.Controllers
         [HttpPost]
         public IActionResult IniciarSesion(Usuario entidad)
         {
-            entidad.Contrasenna = _utilitariosModel.Encrypt(entidad.Contrasenna);
+            entidad.Contrasenna = _utilitariosModel.Encrypt(entidad.Contrasenna!);
             var resp = _usuarioModel.IniciarSesion(entidad);
 
             if (resp?.Codigo == "00")
             {
-                HttpContext.Session.SetString("Login", "true");
-                return RedirectToAction("PantallaInicio", "Home");
+                if ((bool)(resp?.Dato?.EsTemporal!))
+                    return RedirectToAction("CambiarContrasenna", "Home");
+                else
+                {
+                    HttpContext.Session.SetString("Login", "true");
+                    return RedirectToAction("PantallaInicio", "Home");
+                }
             }
             else
             {
@@ -44,8 +49,30 @@ namespace ProyectoWeb_Sabado.Controllers
         [HttpPost]
         public IActionResult RegistrarUsuario(Usuario entidad)
         {
-            entidad.Contrasenna = _utilitariosModel.Encrypt(entidad.Contrasenna);
+            entidad.Contrasenna = _utilitariosModel.Encrypt(entidad.Contrasenna!);
             var resp = _usuarioModel.RegistrarUsuario(entidad);
+
+            if (resp?.Codigo == "00")
+                return RedirectToAction("IniciarSesion", "Home");
+            else
+            {
+                ViewBag.MsjPantalla = resp?.Mensaje;
+                return View();
+            }
+        }
+
+
+        [HttpGet]
+        public IActionResult RecuperarAcceso()
+        {
+            HttpContext.Session.Clear();
+            return View();
+        }
+
+        [HttpPost]
+        public IActionResult RecuperarAcceso(Usuario entidad)
+        {
+            var resp = _usuarioModel.RecuperarAcceso(entidad);
 
             if (resp?.Codigo == "00")
                 return RedirectToAction("IniciarSesion", "Home");
