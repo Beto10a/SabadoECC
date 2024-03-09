@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using ProyectoWeb_Sabado.Entidades;
 using ProyectoWeb_Sabado.Models;
@@ -23,6 +24,10 @@ namespace ProyectoWeb_Sabado.Controllers
 
             if (resp?.Codigo == "00")
             {
+                HttpContext.Session.SetString("Correo", resp?.Dato?.Correo!);
+                HttpContext.Session.SetString("Nombre", resp?.Dato?.NombreUsuario!);
+                HttpContext.Session.SetString("Categoria", resp?.Dato?.NombreCategoria!);
+
                 if ((bool)(resp?.Dato?.EsTemporal!))
                     return RedirectToAction("CambiarContrasenna", "Home");
                 else
@@ -87,13 +92,45 @@ namespace ProyectoWeb_Sabado.Controllers
         [HttpGet]
         public IActionResult CambiarContrasenna()
         {
-            return View();
+            var usuario = new Usuario();
+            usuario.Correo = HttpContext.Session.GetString("Correo");
+
+            return View(usuario);
         }
 
         [HttpPost]
         public IActionResult CambiarContrasenna(Usuario entidad)
         {
-            return View();
+            if (entidad.Contrasenna?.Trim() == entidad.ContrasennaTemporal?.Trim())
+            {
+                ViewBag.MsjPantalla = "Debe utilizar una contraseña distinta";
+                return View();
+            }
+
+            entidad.Contrasenna = _utilitariosModel.Encrypt(entidad.Contrasenna!);
+            entidad.ContrasennaTemporal = _utilitariosModel.Encrypt(entidad.ContrasennaTemporal!);
+
+            var resp = _usuarioModel.CambiarContrasenna(entidad);
+
+            if (resp?.Codigo == "00")
+            {
+                HttpContext.Session.SetString("Login", "true");
+                return RedirectToAction("PantallaInicio", "Home");
+            }
+            else
+            {
+                ViewBag.MsjPantalla = resp?.Mensaje;
+                return View();
+            }
+        }
+
+
+        [Seguridad]
+        [HttpGet]
+        public IActionResult Salir()
+        {
+            HttpContext.Session.Clear();
+            return RedirectToAction("IniciarSesion", "Home");
         }
 
 

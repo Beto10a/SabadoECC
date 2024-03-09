@@ -9,5 +9,7 @@ namespace ProyectoWeb_Sabado.Services
         UsuarioRespuesta? IniciarSesion(Usuario entidad);
 
         UsuarioRespuesta? RecuperarAcceso(Usuario entidad);
+
+        UsuarioRespuesta? CambiarContrasenna(Usuario entidad);
     }
 }
