@@ -1,1 +1,54 @@
-﻿
+﻿@model List<ProyectoWeb_Sabado.Entidades.Servicio>
+
+<div class="container-fluid content-header">
+
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Servicios</h3>
+
+                    <div style="text-align:right">
+                        <a class="btn btn-primary" href="@Url.Action("RegistrarServicio", "Servicio")"> + Registrar </a>
+                    </div>
+                </div>
+
+                <div class="card-body">
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Nombre</th>
+                                <th>Precio</th>
+                                <th>Estado</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+
+                            @foreach (var item in Model)
+                            {
+                                <tr>
+                                    <td>@item.IdServicio</td>
+                                    <td>@item.Nombre</td>
+                                    <td>@item.Precio</td>
+
+                                    @if (item.Estado)
+                                    {
+                                        <td>Activo</td>
+                                    }
+                                    else
+                                    {
+                                        <td>Inactivo</td>
+                                    }
+
+                                </tr>
+                            }
+
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>

@@ -27,6 +27,7 @@ namespace ProyectoWeb_Sabado.Controllers
                 HttpContext.Session.SetString("Correo", resp?.Dato?.Correo!);
                 HttpContext.Session.SetString("Nombre", resp?.Dato?.NombreUsuario!);
                 HttpContext.Session.SetString("Categoria", resp?.Dato?.NombreCategoria!);
+                HttpContext.Session.SetString("Token", resp?.Dato?.Token!);
 
                 if ((bool)(resp?.Dato?.EsTemporal!))
                     return RedirectToAction("CambiarContrasenna", "Home");

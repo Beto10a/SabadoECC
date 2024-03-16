@@ -1,0 +1,63 @@
+﻿@model ProyectoWeb_Sabado.Entidades.Servicio
+
+<div class="container-fluid content-header">
+
+    <div class="row">
+        <div class="col-md-2"></div>
+        <div class="col-md-8">
+
+            <br />
+            <div class="card card-primary">
+                <div class="card-header">
+                    <h3 class="card-title" style="text-align:center; font-size:large">Registrar Servicio</h3>
+                </div>
+
+                @using (Html.BeginForm("RegistrarServicio", "Servicio", FormMethod.Post))
+                {
+
+                    <div class="card-body">
+                        <label>Nombre</label>
+                        <input asp-for="Nombre" class="form-control" type="text" placeholder="Nombre" required />
+                        <br>
+
+                        <label>Precio</label>
+                        <input asp-for="Precio" id="Precio" class="form-control" type="text" placeholder="Precio" required
+                               onkeypress="return ValidarNumeros(this.id)" onpaste="return false;" />
+                        <br>
+
+                        <label>Imagen</label>
+                        <input id="imagenServicio" name="imagenServicio" class="form-control" type="file" required>
+                        <br>
+
+                        <label>Video</label>
+                        <input asp-for="Video" class="form-control" type="text" placeholder="Video" required />
+                        <br>
+
+                        <button type="submit" class="btn btn-primary">Procesar</button>
+                    </div>
+
+                }
+            </div>
+
+        </div>
+    </div>
+
+</div>
+
+<script>
+    function ValidarNumeros(evt) {
+        var charCode = (evt.which) ? evt.which : event.keyCode;
+
+        if (charCode >= 48 && charCode <= 57) {
+            return true;
+        }
+        else if (charCode == 46) {
+            var txt = document.getElementById(evt).value;
+            if (!(txt.indexOf(".") > -1)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+</script>

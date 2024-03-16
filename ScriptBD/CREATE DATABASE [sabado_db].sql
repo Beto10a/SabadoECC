@@ -2,6 +2,7 @@ USE [master]
 GO
 
 CREATE DATABASE [sabado_db]
+GO
 
 USE [sabado_db]
 GO
@@ -30,7 +31,6 @@ CREATE TABLE [dbo].[tServicio](
 	[IdServicio] [bigint] IDENTITY(1,1) NOT NULL,
 	[Nombre] [varchar](200) NOT NULL,
 	[Precio] [decimal](18, 2) NOT NULL,
-	[FechaServicio] [datetime] NOT NULL,
 	[Imagen] [varchar](500) NOT NULL,
 	[Video] [varchar](500) NULL,
 	[Estado] [bit] NOT NULL,
@@ -77,9 +77,18 @@ GO
 SET IDENTITY_INSERT [dbo].[tRol] OFF
 GO
 
+SET IDENTITY_INSERT [dbo].[tServicio] ON 
+GO
+INSERT [dbo].[tServicio] ([IdServicio], [Nombre], [Precio], [Imagen], [Video], [Estado]) VALUES (2, N'Odontología', CAST(25000.00 AS Decimal(18, 2)), N'PRUEBA', N'PRUEBA', 1)
+GO
+INSERT [dbo].[tServicio] ([IdServicio], [Nombre], [Precio], [Imagen], [Video], [Estado]) VALUES (3, N'Medicina General', CAST(20000.00 AS Decimal(18, 2)), N'PRUEBA', N'PRUEBA', 1)
+GO
+SET IDENTITY_INSERT [dbo].[tServicio] OFF
+GO
+
 SET IDENTITY_INSERT [dbo].[tUsuario] ON 
 GO
-INSERT [dbo].[tUsuario] ([IdUsuario], [Correo], [Contrasenna], [Nombre], [IdRol], [Estado], [EsTemporal], [IdCategoria]) VALUES (1, N'cvasquez10821@ufide.ac.cr', N'AmSRx7cr7wKWz6Na7LH3FA==', N'Claudio Vasquez', 1, 1, 0, 3)
+INSERT [dbo].[tUsuario] ([IdUsuario], [Correo], [Contrasenna], [Nombre], [IdRol], [Estado], [EsTemporal], [IdCategoria]) VALUES (1, N'cvasquez10821@ufide.ac.cr', N'mzhhEyLuYke4Q8wSs8gHuA==', N'Claudio Vasquez', 1, 1, 0, 3)
 GO
 SET IDENTITY_INSERT [dbo].[tUsuario] OFF
 GO
@@ -135,6 +144,25 @@ BEGIN
 END
 GO
 
+CREATE PROCEDURE [dbo].[ConsultarServicios]
+	@MostrarTodos BIT
+AS
+BEGIN
+
+	IF(@MostrarTodos = 1)
+	BEGIN
+		SELECT	IdServicio,Nombre,Precio,Imagen,Video,Estado
+		FROM	dbo.tServicio
+	END
+	ELSE
+	BEGIN
+		SELECT	IdServicio,Nombre,Precio,Imagen,Video,Estado
+		FROM	dbo.tServicio
+		WHERE	Estado = 1
+	END
+END
+GO
+
 CREATE PROCEDURE [dbo].[IniciarSesion]
 	@Correo			VARCHAR(200),
     @Contrasenna	VARCHAR(200)
@@ -179,6 +207,25 @@ BEGIN
 	  INNER JOIN tRol R ON U.IdRol = R.IdRol
 	  WHERE	Correo = @Correo
 		AND Estado = 1
+
+END
+GO
+
+CREATE PROCEDURE [dbo].[RegistrarServicio]
+	@Nombre	varchar(200),
+	@Precio decimal(18,2),
+	@Imagen varchar(500),
+	@Video varchar(500)
+AS
+BEGIN
+	
+	IF NOT EXISTS(SELECT 1 FROM tServicio WHERE Nombre = @Nombre)
+	BEGIN
+
+		INSERT INTO dbo.tServicio(Nombre,Precio,Imagen,Video,Estado)
+		VALUES (@Nombre,@Precio,@Imagen,@Video,1)
+
+	END
 
 END
 GO
