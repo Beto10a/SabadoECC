@@ -79,9 +79,9 @@ GO
 
 SET IDENTITY_INSERT [dbo].[tServicio] ON 
 GO
-INSERT [dbo].[tServicio] ([IdServicio], [Nombre], [Precio], [Imagen], [Video], [Estado]) VALUES (2, N'Odontología', CAST(25000.00 AS Decimal(18, 2)), N'PRUEBA', N'PRUEBA', 1)
+INSERT [dbo].[tServicio] ([IdServicio], [Nombre], [Precio], [Imagen], [Video], [Estado]) VALUES (9, N'Odontología', CAST(50000.00 AS Decimal(18, 2)), N'/images/', N'https://www.youtube.com/embed/DG15OMmtjd8', 1)
 GO
-INSERT [dbo].[tServicio] ([IdServicio], [Nombre], [Precio], [Imagen], [Video], [Estado]) VALUES (3, N'Medicina General', CAST(20000.00 AS Decimal(18, 2)), N'PRUEBA', N'PRUEBA', 1)
+INSERT [dbo].[tServicio] ([IdServicio], [Nombre], [Precio], [Imagen], [Video], [Estado]) VALUES (10, N'Odontología2', CAST(25000.00 AS Decimal(18, 2)), N'/images/', N'https://www.youtube.com/embed/5yC0SP4jjfY', 1)
 GO
 SET IDENTITY_INSERT [dbo].[tServicio] OFF
 GO
@@ -109,6 +109,21 @@ ALTER TABLE [dbo].[tUsuario]  WITH CHECK ADD  CONSTRAINT [FK_tUsuario_tRol] FORE
 REFERENCES [dbo].[tRol] ([IdRol])
 GO
 ALTER TABLE [dbo].[tUsuario] CHECK CONSTRAINT [FK_tUsuario_tRol]
+GO
+
+CREATE PROCEDURE [dbo].[ActualizarServicio]
+	@IdServicio BIGINT,
+	@Precio decimal(18,2),
+	@Video varchar(500)
+AS
+BEGIN
+
+	UPDATE tServicio
+	   SET Precio = @Precio,		   
+		   Video = @Video
+	 WHERE IdServicio = @IdServicio
+
+END
 GO
 
 CREATE PROCEDURE [dbo].[CambiarContrasenna]
@@ -144,6 +159,17 @@ BEGIN
 END
 GO
 
+CREATE PROCEDURE [dbo].[ConsultarServicio]
+	@IdServicio BIGINT
+AS
+BEGIN
+
+	SELECT	IdServicio,Nombre,Precio,Imagen + CONVERT(VARCHAR,IdServicio) + '.png' Imagen,Video,Estado
+	FROM	dbo.tServicio
+	WHERE	IdServicio = @IdServicio
+END
+GO
+
 CREATE PROCEDURE [dbo].[ConsultarServicios]
 	@MostrarTodos BIT
 AS
@@ -151,12 +177,12 @@ BEGIN
 
 	IF(@MostrarTodos = 1)
 	BEGIN
-		SELECT	IdServicio,Nombre,Precio,Imagen,Video,Estado
+		SELECT	IdServicio,Nombre,Precio,Imagen + CONVERT(VARCHAR,IdServicio) + '.png' Imagen,Video,Estado
 		FROM	dbo.tServicio
 	END
 	ELSE
 	BEGIN
-		SELECT	IdServicio,Nombre,Precio,Imagen,Video,Estado
+		SELECT	IdServicio,Nombre,Precio,Imagen + CONVERT(VARCHAR,IdServicio) + '.png' Imagen,Video,Estado
 		FROM	dbo.tServicio
 		WHERE	Estado = 1
 	END
@@ -218,13 +244,17 @@ CREATE PROCEDURE [dbo].[RegistrarServicio]
 	@Video varchar(500)
 AS
 BEGIN
-	
+
 	IF NOT EXISTS(SELECT 1 FROM tServicio WHERE Nombre = @Nombre)
 	BEGIN
-
 		INSERT INTO dbo.tServicio(Nombre,Precio,Imagen,Video,Estado)
 		VALUES (@Nombre,@Precio,@Imagen,@Video,1)
 
+		SELECT @@IDENTITY 'IdServicio'
+	END
+	ELSE
+	BEGIN
+		SELECT -1 'IdServicio'
 	END
 
 END

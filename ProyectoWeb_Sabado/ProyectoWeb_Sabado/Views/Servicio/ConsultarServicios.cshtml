@@ -19,8 +19,9 @@
                             <tr>
                                 <th>#</th>
                                 <th>Nombre</th>
-                                <th>Precio</th>
+                                <th>Precio</th>                               
                                 <th>Estado</th>
+                                <th>Acciones</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -30,8 +31,7 @@
                                 <tr>
                                     <td>@item.IdServicio</td>
                                     <td>@item.Nombre</td>
-                                    <td>@item.Precio</td>
-
+                                    <td>@item.Precio</td>  
                                     @if (item.Estado)
                                     {
                                         <td>Activo</td>
@@ -40,6 +40,16 @@
                                     {
                                         <td>Inactivo</td>
                                     }
+
+                                    <td style="text-align:center">
+                                        <a href="@Url.Action("ActualizarServicio","Servicio", new { id = item.IdServicio})">
+                                            <i class="fa fa-pencil-square-o fa-lg"></i>
+                                        </a>
+
+                                        <a href="@Url.Action("EliminarServicio","Servicio", new { id = item.IdServicio})">
+                                            <i class="fa fa-trash-o fa-lg"></i>
+                                        </a>
+                                    </td>
 
                                 </tr>
                             }

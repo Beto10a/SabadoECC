@@ -3,35 +3,50 @@
 <div class="container-fluid content-header">
 
     <div class="row">
-        <div class="col-md-2"></div>
-        <div class="col-md-8">
+        <div class="col-md-1"></div>
+        <div class="col-md-10">
 
             <br />
             <div class="card card-primary">
                 <div class="card-header">
-                    <h3 class="card-title" style="text-align:center; font-size:large">Registrar Servicio</h3>
+                    <h3 class="card-title" style="text-align:center; font-size:large">Actualizar Servicio</h3>
                 </div>
 
-                @using (Html.BeginForm("RegistrarServicio", "Servicio", FormMethod.Post, new { @enctype = "multipart/form-data" } ))
+                @using (Html.BeginForm("ActualizarServicio", "Servicio", FormMethod.Post, new { @enctype = "multipart/form-data" }))
                 {
+                    <input asp-for="IdServicio" type="hidden" readonly="readonly" required />
 
                     <div class="card-body">
                         <label>Nombre</label>
-                        <input asp-for="Nombre" class="form-control" type="text" placeholder="Nombre" required />
+                        <input asp-for="Nombre" class="form-control" type="text" placeholder="Nombre" readonly="readonly" required />
                         <br>
 
                         <label>Precio</label>
                         <input asp-for="Precio" id="Precio" class="form-control" type="text" placeholder="Precio" required
                                onkeypress="return ValidarNumeros(this.id)" onpaste="return false;" />
-                        <br>
+                        <br>                       
 
                         <label>Video</label>
-                        <input asp-for="Video" class="form-control" type="text" placeholder="Video" required />
+                        <div class="row">
+                            <div class="col-7">
+                                <input asp-for="Video" class="form-control" type="text" placeholder="Video" required />
+                            </div>
+                            <div class="col-5" style="text-align:center">
+                                <iframe src="@ViewBag.urlVideo" style="width:150px; height:150px;"></iframe>
+                            </div>
+                        </div>
                         <br>
 
                         <label>Imagen</label>
-                        <input accept="image/png" id="Imagen" name="Imagen" class="form-control" type="file" required>
-                        <br>                        
+                        <div class="row">
+                            <div class="col-7">
+                                <input accept="image/png" id="Imagen" name="Imagen" class="form-control" type="file">
+                            </div>
+                            <div class="col-5" style="text-align:center">
+                                <img src="@ViewBag.urlImagen" style="width:150px; height:150px;">
+                            </div>
+                        </div>
+                        <br>
 
                         @if (ViewBag.MsjPantalla != null)
                         {
