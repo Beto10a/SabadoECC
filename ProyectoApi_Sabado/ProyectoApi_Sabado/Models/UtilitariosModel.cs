@@ -16,7 +16,7 @@ namespace ProyectoApi_Sabado.Models
         {
             List<Claim> claims = new List<Claim>();
             claims.Add(new Claim("username", Encrypt(correo)));
-            
+
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(SecretKey));
             var cred = new SigningCredentials(key, SecurityAlgorithms.HmacSha256Signature);
 

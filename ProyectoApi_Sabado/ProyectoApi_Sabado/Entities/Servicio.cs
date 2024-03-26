@@ -1,6 +1,4 @@
-﻿using ProyectoApi_Sabado.Entidades;
-
-namespace ProyectoApi_Sabado.Entities
+﻿namespace ProyectoApi_Sabado.Entities
 {
     public class Servicio
     {
